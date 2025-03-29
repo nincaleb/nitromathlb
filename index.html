@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nitromath Player Leaderboard</title>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      margin: 20px;
+      background: #121212;
+      color: #fff;
+    }
+    nav {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    nav a {
+      color: #4aa3df;
+      margin: 0 10px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .request-link {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .request-link a {
+      color: #4aa3df;
+      font-weight: bold;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    #lastUpdated {
+      text-align: center;
+      font-size: 1em;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+    #message {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.1em;
+      color: #ccc;
+    }
+    /* DataTables dark styling */
+    .dataTables_wrapper {
+      color: #fff;
+    }
+    .dataTables_filter input,
+    .dataTables_length select {
+      background: #333 !important;
+      color: #fff !important;
+      border: 1px solid #444 !important;
+    }
+    .dataTables_paginate .paginate_button {
+      color: #fff !important;
+      background: #333 !important;
+      border: 1px solid #444 !important;
+    }
+    .dataTables_paginate .paginate_button:hover {
+      background: #444 !important;
+    }
+    .dataTables_info {
+      color: #ccc !important;
+    }
+    /* Override table backgrounds and borders */
+    table.dataTable {
+      background-color: #121212;
+    }
+    table.dataTable thead th,
+    table.dataTable tbody td {
+      background-color: #1e1e1e !important;
+      color: #fff !important;
+      border: 1px solid #444 !important;
+    }
+    /* Sorting, hover, and selected states */
+    table.dataTable thead th.sorting,
+    table.dataTable thead th.sorting_asc,
+    table.dataTable thead th.sorting_desc {
+      background-color: #1e1e1e !important;
+      color: #fff !important;
+    }
+    table.dataTable tbody tr:hover {
+      background-color: #2e2e2e !important;
+    }
+    table.dataTable tbody tr.selected,
+    table.dataTable tbody td.selected {
+      background-color: #2e2e2e !important;
+    }
+    /* Subtitle styling */
+    .subtitle {
+      color: #888;
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Players</a>
+    <a href="teams.html">Teams</a>
+  </nav>
+
+  <!-- Google Form request link at the top -->
+  <div class="request-link">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSe10KgvKCbe5v65IekfG2Qzbqv-bYW_gdpBullaAB1W1j_z1Q/viewform?usp=header" target="_blank">
+      Request for a Team to be Added
+    </a>
+  </div>
+  
+  <h1>Nitromath Player Leaderboard</h1>
+  <div id="lastUpdated">Loading...</div>
+  <div id="message">Loading leaderboard...</div>
+  
+  <table id="leaderboard" class="display" style="width:100%">
+    <thead>
+      <tr>
+        <th>Place</th>
+        <th>Racer</th>
+        <th>Points</th>
+        <th>Races</th>
+        <th>Team</th>
+      </tr>
+    </thead>
+  </table>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script>
+    // Fetch the timestamp from timestamp.txt as UTC and display it.
+    fetch("timestamp.txt")
+      .then(response => response.text())
+      .then(text => {
+        // Remove "Last Updated:" prefix and trim spaces
+        const serverTimestamp = text.replace("Last Updated:", "").trim();
+        // We assume the saved timestamp is in UTC.
+        const utcDate = new Date(serverTimestamp + " UTC");
+        document.getElementById("lastUpdated").textContent = "Last Updated (Your Local Time): " + utcDate.toLocaleString() + " ";
+      })
+      .catch(error => {
+        console.error("Error fetching the timestamp:", error);
+        document.getElementById("lastUpdated").textContent = "Last Updated: Error loading timestamp.";
+      });
+
+    // Helper: Format date as YYYYMMDD using UTC, for file names.
+    function formatUTCDate(date) {
+      const y = date.getUTCFullYear();
+      const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+      const d = String(date.getUTCDate()).padStart(2, '0');
+      return y + m + d;
+    }
+    
+    // Update CSV path to use the csv_archive folder and UTC date.
+    const playerCsv = `csv_archive/nitromath_season_leaderboard_${formatUTCDate(new Date())}.csv`;
+
+    Papa.parse(playerCsv, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: function(results) {
+        const processedData = results.data.map((row, index) => ({
+          rank: index + 1,
+          displayName: row.DisplayName || 'Unknown',
+          profileLink: row.ProfileLink || '#',
+          points: Math.round(parseFloat(row.Points)) || 0,
+          races: row.Races || 0,
+          team: row.Team || ''
+        })).sort((a, b) => b.points - a.points);
+
+        $('#leaderboard').DataTable({
+          data: processedData,
+          pageLength: 100,
+          order: [[2, 'desc']],
+          columnDefs: [
+            { targets: '_all', orderSequence: ["desc", "asc"] }
+          ],
+          dom: '<"top"lf>rt<"bottom"ip>',
+          columns: [
+            { data: 'rank' },
+            { 
+              data: null,
+              render: (data) => `
+                <a href="${data.profileLink}" target="_blank" style="color: #4aa3df;">
+                  ${data.displayName}
+                </a>
+              `
+            },
+            { 
+              data: 'points',
+              render: function(data, type, row) {
+                return type === 'display' ? Number(data).toLocaleString() : data;
+              }
+            },
+            { 
+              data: 'races',
+              render: function(data, type, row) {
+                return type === 'display' ? Number(data).toLocaleString() : data;
+              }
+            },
+            { 
+              data: 'team',
+              render: (team) => team ? `
+                <a href="https://nitromath.com/team/${team}" target="_blank" style="color: #6fcc7c;">
+                  ${team}
+                </a>
+              ` : ''
+            }
+          ],
+          initComplete: function() {
+            $('.dataTables_filter label').css('color', '#fff');
+            $('.dataTables_length label').css('color', '#fff');
+          }
+        });
+        
+        document.getElementById('message').textContent = '';
+      }
+    });
+  </script>
+</body>
+</html>

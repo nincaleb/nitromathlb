@@ -1,0 +1,43 @@
+name: Update NitroType Leaderboards
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'  # Runs every 3 hours on the hour (e.g., 00:00, 03:00, 06:00, etc.)
+  workflow_dispatch:       # Allows manual triggering from GitHub Actions
+
+jobs:
+  update-leaderboards:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Ensure the workflow has permission to push changes
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install Dependencies
+        run: |
+          pip install requests pandas
+
+      - name: Run NitroType Leaderboard Script
+        run: python nitrotype_leaderboard.py
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Commit Changes
+        run: |
+          git add .
+          # Only commit if there are changes
+          git diff-index --quiet HEAD || git commit -m "Auto update leaderboard at $(date)"
+
+      - name: Push Changes using PAT
+        run: |
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/nincaleb/nitrotypelb.git main
