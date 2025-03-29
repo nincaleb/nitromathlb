@@ -1,4 +1,4 @@
-name: Update NitroType Leaderboards
+name: Update NitroMath Leaderboards
 
 on:
   schedule:
@@ -24,8 +24,8 @@ jobs:
         run: |
           pip install requests pandas
 
-      - name: Run NitroType Leaderboard Script
-        run: python nitrotype_leaderboard.py
+      - name: Run NitroMath Leaderboard Script
+        run: python nitromath_leaderboard.py
 
       - name: Configure Git
         run: |
