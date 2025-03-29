@@ -40,4 +40,4 @@ jobs:
 
       - name: Push Changes using PAT
         run: |
-          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/nincaleb/nitrotypelb.git main
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/nincaleb/nitromathlb.git main
