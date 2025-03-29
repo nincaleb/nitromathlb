@@ -1,5 +1,5 @@
 
-```markdown
+
 # Nitromath Season Leaderboards
 
 This repository contains tools to fetch and display seasonal statistics for Nitromath teams. It includes a Python script to gather and process data and HTML pages to display interactive leaderboards.
