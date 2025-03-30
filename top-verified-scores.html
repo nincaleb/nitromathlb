@@ -4,14 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top Verified Scores</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 20px;
+            background: #121212;
+            color: #fff;
+        }
+        nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: #4aa3df;
+            margin: 0 10px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .request-link {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .request-link a {
+            color: #4aa3df;
+            font-weight: bold;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        #lastUpdated {
+            text-align: center;
+            font-size: 1em;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        #message {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #ccc;
+        }
+        /* DataTables dark styling */
+        .dataTables_wrapper {
+            color: #fff;
+        }
+        .dataTables_filter input,
+        .dataTables_length select {
+            background: #333 !important;
+            color: #fff !important;
+            border: 1px solid #444 !important;
+        }
+        .dataTables_paginate .paginate_button {
+            color: #fff !important;
+            background: #333 !important;
+            border: 1px solid #444 !important;
+        }
+        .dataTables_paginate .paginate_button:hover {
+            background: #444 !important;
+        }
+        .dataTables_info {
+            color: #ccc !important;
+        }
+        /* Override table backgrounds and borders */
+        table.dataTable {
+            background-color: #121212;
+        }
+        table.dataTable thead th,
+        table.dataTable tbody td {
+            background-color: #1e1e1e !important;
+            color: #fff !important;
+            border: 1px solid #444 !important;
+        }
+        /* Sorting, hover, and selected states */
+        table.dataTable thead th.sorting,
+        table.dataTable thead th.sorting_asc,
+        table.dataTable thead th.sorting_desc {
+            background-color: #1e1e1e !important;
+            color: #fff !important;
+        }
+        table.dataTable tbody tr:hover {
+            background-color: #2e2e2e !important;
+        }
+        table.dataTable tbody tr.selected,
+        table.dataTable tbody td.selected {
+            background-color: #2e2e2e !important;
+        }
+        /* Subtitle styling */
+        .subtitle {
+            color: #888;
+            font-size: 0.85em;
+        }
+    </style>
 </head>
 <body>
     <nav>
-        <a href="index.html">Leaderboard</a> |
-        <a href="another-page.html">Another Page</a> |
+        <a href="index.html">Players</a>
+        <a href="teams.html">Teams</a>
         <a href="top-verified-scores.html">Top Verified Scores</a>
     </nav>
+
     <h1>Top Verified Scores</h1>
-    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTj1uubhl2Ppk20LSrICfSgrZSmovvlqYRcYb1wsSU0_CRrGgU7j7ZGjMNPIt83SbemQrF5tkb9VNLs/pubhtml?gid=28479328&amp;single=true&amp;widget=true&amp;headers=false" width="100%" height="600"></iframe>
+
+    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTj1uubhl2Ppk20LSrICfSgrZSmovvlqYRcYb1wsSU0_CRrGgU7j7ZGjMNPIt83SbemQrF5tkb9VNLs/pubhtml?gid=28479328&single=true&widget=true&headers=false"></iframe>
+
 </body>
 </html>
