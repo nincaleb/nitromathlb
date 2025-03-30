@@ -85,7 +85,7 @@ for team_tag in TEAM_TAGS:
 
     team_summary[team_tag] = {
         'Team': team_tag,
-        'TotalPoints': points,
+        'TotalPoints': answered - errs,
         'Races': played,
         'Members': members  # Add the "members" value
     }
@@ -102,7 +102,7 @@ for team_tag in TEAM_TAGS:
             title = member.get('title', 'N/A')  # Get the "title" value
 
             # Update points calculation for players
-            points = (answered - errs) / played if played > 0 else 0
+            points = (answered - errs) if played > 0 else 0
 
             all_players.append({
                 'Username': username,
@@ -122,9 +122,9 @@ else:
 
     utc_filename = datetime.utcnow().strftime("%Y%m%d")
     # Save player leaderboard CSV in csv_archive folder based on UTC date.
-    df.to_csv(os.path.join(csv_archive_dir, f'nitromath_season_leaderboard_{utc_filename}.csv'), index=False)
+    df.to_csv(os.path.join(csv_archive_dir, f'nitromath_season_leaderboard_${utc_filename}.csv'), index=False)
 
     df_teams = pd.DataFrame(list(team_summary.values()))
     df_teams = df_teams.sort_values(by='TotalPoints', ascending=False)
     # Save team leaderboard CSV in csv_archive folder based on UTC date.
-    df_teams.to_csv(os.path.join(csv_archive_dir, f'nitromath_team_leaderboard_{utc_filename}.csv'), index=False)
+    df_teams.to_csv(os.path.join(csv_archive_dir, f'nitromath_team_leaderboard_${utc_filename}.csv'), index=False)
