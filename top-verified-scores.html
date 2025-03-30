@@ -13,12 +13,8 @@
             background: #121212;
             color: #fff;
             height: 100vh;
-            overflow: hidden;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
+            display: flex;
+            flex-direction: column;
         }
         nav {
             text-align: center;
@@ -30,6 +26,16 @@
             text-decoration: none;
             font-weight: bold;
         }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin: 20px 0;
+        }
+        iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -38,6 +44,8 @@
         <a href="teams.html">Teams</a>
         <a href="top-verified-scores.html">Top Verified Scores</a>
     </nav>
+
+    <h1>Top Verified Scores</h1>
 
     <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTj1uubhl2Ppk20LSrICfSgrZSmovvlqYRcYb1wsSU0_CRrGgU7j7ZGjMNPIt83SbemQrF5tkb9VNLs/pubhtml?gid=28479328&single=true&widget=true&headers=false"></iframe>
 </body>
