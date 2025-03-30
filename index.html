@@ -174,7 +174,8 @@
           points: Math.round(parseFloat(row.Points)) || 0,
           races: row.Races || 0,
           ppg: row.Races ? (Math.round(parseFloat(row.Points)) / row.Races).toFixed(2) : 0, // Calculate PPG
-          team: row.Team || ''
+          team: row.Team || '',
+          title: row.Title || ''  // Get the "title" value
         })).sort((a, b) => b.points - a.points);
 
         $('#leaderboard').DataTable({
@@ -193,6 +194,7 @@
                 <a href="${data.profileLink}" target="_blank" style="color: #4aa3df;">
                   ${data.displayName}
                 </a>
+                <div class="subtitle">"${data.title}"</div>
               `
             },
             { 

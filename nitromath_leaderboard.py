@@ -24,7 +24,6 @@ HEADERS = {
     "Accept": "application/json",
 }
 
-
 def get_team_data(team_tag, retries=3, delay=5):
     """Fetch season data and stats from the API for a team."""
     url = f"https://www.nitromath.com/api/v2/teams/{team_tag}"
@@ -44,7 +43,6 @@ def get_team_data(team_tag, retries=3, delay=5):
             time.sleep(delay)
     return [], [], {}
 
-
 def get_team_stats(stats):
     """Extract relevant stats from the 'board: season'."""
     for stat in stats:
@@ -55,7 +53,6 @@ def get_team_stats(stats):
                 'errs': int(stat.get('errs', 0))
             }
     return {'answered': 0, 'played': 0, 'errs': 0}
-
 
 # Use UTC for timestamp and filenames.
 utc_timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -102,6 +99,7 @@ for team_tag in TEAM_TAGS:
             answered = int(member.get('answered', 0))
             played = int(member.get('played', 0))
             errs = int(member.get('errs', 0))
+            title = member.get('title', 'N/A')  # Get the "title" value
 
             # Update points calculation for players
             points = (answered - errs) / played if played > 0 else 0
@@ -112,6 +110,7 @@ for team_tag in TEAM_TAGS:
                 'DisplayName': display_name,
                 'Races': played,
                 'Points': points,
+                'Title': title,  # Add the "title" value
                 'Team': team_tag
             })
 
