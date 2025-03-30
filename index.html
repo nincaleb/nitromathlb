@@ -124,7 +124,8 @@
         <th>Place</th>
         <th>Racer</th>
         <th>Points</th>
-        <th>Races</th>
+        <th>PPG</th>
+        <th>Games</th>
         <th>Team</th>
       </tr>
     </thead>
@@ -172,6 +173,7 @@
           profileLink: row.ProfileLink || '#',
           points: Math.round(parseFloat(row.Points)) || 0,
           races: row.Races || 0,
+          ppg: row.Races ? (Math.round(parseFloat(row.Points)) / row.Races).toFixed(2) : 0, // Calculate PPG
           team: row.Team || ''
         })).sort((a, b) => b.points - a.points);
 
@@ -195,6 +197,12 @@
             },
             { 
               data: 'points',
+              render: function(data, type, row) {
+                return type === 'display' ? Number(data).toLocaleString() : data;
+              }
+            },
+            { 
+              data: 'ppg',
               render: function(data, type, row) {
                 return type === 'display' ? Number(data).toLocaleString() : data;
               }

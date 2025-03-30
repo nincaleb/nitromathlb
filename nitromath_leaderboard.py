@@ -35,12 +35,13 @@ def get_team_data(team_tag, retries=3, delay=5):
                 if data.get('status') == 'OK':
                     season = data['results'].get('season', [])
                     stats = data['results'].get('stats', [])
-                    return season, stats
-            return [], []
+                    info = data['results'].get('info', {})
+                    return season, stats, info
+            return [], [], {}
         except Exception as e:
             print(f"Error fetching data for team {team_tag}: {e}")
             time.sleep(delay)
-    return [], []
+    return [], [], {}
 
 def get_team_stats(stats):
     """Extract relevant stats from the 'board: season'."""
@@ -66,7 +67,7 @@ all_players = []
 team_summary = {}  # Store team stats
 
 for team_tag in TEAM_TAGS:
-    season_data, stats_data = get_team_data(team_tag)
+    season_data, stats_data, info_data = get_team_data(team_tag)
     if not season_data:
         print(f"No seasonal data found for team {team_tag}")
         continue
@@ -75,11 +76,13 @@ for team_tag in TEAM_TAGS:
     team_stats = get_team_stats(stats_data)
     answered = team_stats['answered']
     played = team_stats['played']
+    members = info_data.get('members', 0)  # Get the "members" value
 
     team_summary[team_tag] = {
         'Team': team_tag,
         'TotalPoints': answered,
-        'Races': played
+        'Races': played,
+        'Members': members  # Add the "members" value
     }
 
     # Process individual players

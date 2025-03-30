@@ -115,8 +115,9 @@
         <th>Rank</th>
         <th>Team</th>
         <th>Total Points</th>
+        <th>PPG</th> <!-- Added PPG column header -->
         <th>Racers</th>
-        <th>Races</th>
+        <th>Games</th>
       </tr>
     </thead>
   </table>
@@ -165,8 +166,9 @@
             rank: i + 1,
             team: t.Team,
             points: Math.round(parseFloat(t.TotalPoints)) || 0,
-            racers: t.Racers || 0,
-            races: t.Races || 0
+            ppg: t.Races ? (Math.round(parseFloat(t.TotalPoints)) / t.Races).toFixed(2) : 0, // Calculate PPG
+            racers: t.Members || 0, 
+            games: t.Races || 0
           }));
     
         $('#teamLeaderboard').DataTable({
@@ -193,9 +195,15 @@
                 return type === 'display' ? Number(data).toLocaleString() : data;
               }
             },
-            { data: 'racers' },
             { 
-              data: 'races',
+              data: 'ppg',
+              render: function(data, type, row) {
+                return type === 'display' ? Number(data).toLocaleString() : data;
+              }
+            },
+            { data: 'racers' }, 
+            { 
+              data: 'games',
               render: function(data, type, row) {
                 return type === 'display' ? Number(data).toLocaleString() : data;
               }
