@@ -24,6 +24,7 @@ HEADERS = {
     "Accept": "application/json",
 }
 
+
 def get_team_data(team_tag, retries=3, delay=5):
     """Fetch season data and stats from the API for a team."""
     url = f"https://www.nitromath.com/api/v2/teams/{team_tag}"
@@ -43,15 +44,18 @@ def get_team_data(team_tag, retries=3, delay=5):
             time.sleep(delay)
     return [], [], {}
 
+
 def get_team_stats(stats):
     """Extract relevant stats from the 'board: season'."""
     for stat in stats:
         if stat.get('board') == 'season':
             return {
                 'answered': int(stat.get('answered', 0)),
-                'played': int(stat.get('played', 0))
+                'played': int(stat.get('played', 0)),
+                'errs': int(stat.get('errs', 0))
             }
-    return {'answered': 0, 'played': 0}
+    return {'answered': 0, 'played': 0, 'errs': 0}
+
 
 # Use UTC for timestamp and filenames.
 utc_timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -76,11 +80,15 @@ for team_tag in TEAM_TAGS:
     team_stats = get_team_stats(stats_data)
     answered = team_stats['answered']
     played = team_stats['played']
+    errs = team_stats['errs']
     members = info_data.get('members', 0)  # Get the "members" value
+
+    # Update points calculation
+    points = (answered - errs) / played if played > 0 else 0
 
     team_summary[team_tag] = {
         'Team': team_tag,
-        'TotalPoints': answered,
+        'TotalPoints': points,
         'Races': played,
         'Members': members  # Add the "members" value
     }
@@ -91,14 +99,18 @@ for team_tag in TEAM_TAGS:
             username = member.get('username', 'N/A')
             display_name = member.get('displayName', 'Unknown')
             profile_link = f"https://www.nitromath.com/racer/{username}"
-            points = int(member.get('points', 0))
-            races = int(member.get('played', 0))
+            answered = int(member.get('answered', 0))
+            played = int(member.get('played', 0))
+            errs = int(member.get('errs', 0))
+
+            # Update points calculation for players
+            points = (answered - errs) / played if played > 0 else 0
 
             all_players.append({
                 'Username': username,
                 'ProfileLink': profile_link,
                 'DisplayName': display_name,
-                'Races': races,
+                'Races': played,
                 'Points': points,
                 'Team': team_tag
             })
