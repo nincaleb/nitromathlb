@@ -59,11 +59,18 @@
     }
     .dataTables_paginate .paginate_button {
       color: #fff !important;
-      background: #333 !important;
-      border: 1px solid #444 !important;
+      background: #4aa3df !important;  /* Ensure visible background color */
+      border: 1px solid #4aa3df !important;
+      padding: 5px 10px;
+      margin: 2px;
     }
     .dataTables_paginate .paginate_button:hover {
-      background: #444 !important;
+      background: #6fcc7c !important;  /* Ensure hover background color */
+    }
+    .dataTables_paginate .paginate_button.current {
+      background: #fff !important;  /* Change to a visible background color */
+      color: #4aa3df !important;  /* Change to a visible text color */
+      border: 1px solid #4aa3df !important;
     }
     .dataTables_info {
       color: #ccc !important;
