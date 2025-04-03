@@ -1,7 +1,7 @@
 import os
 import requests
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timezone
 import time
 
 # Updated TEAM_TAGS with your new teams
@@ -56,7 +56,7 @@ def get_team_stats(stats):
     return {'answered': 0, 'played': 0, 'errs': 0}
 
 # Use UTC for timestamp and filenames.
-utc_timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+utc_timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 with open("timestamp.txt", "w") as file:
     file.write(f"Last Updated: {utc_timestamp}")
 
@@ -121,7 +121,7 @@ else:
     df = pd.DataFrame(all_players)
     df = df.sort_values(by='Points', ascending=False)
 
-    utc_filename = datetime.utcnow().strftime("%Y%m%d")
+    utc_filename = datetime.now(timezone.utc).strftime("%Y%m%d")
     # Save player leaderboard CSV in csv_archive folder based on UTC date.
     df.to_csv(os.path.join(csv_archive_dir, f'nitromath_season_leaderboard_{utc_filename}.csv'), index=False)
 
