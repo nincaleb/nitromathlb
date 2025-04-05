@@ -6,22 +6,64 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
+    /* ----------------------------------------------------
+       BASIC RESET & BODY STYLES
+    ---------------------------------------------------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
       font-family: 'Montserrat', sans-serif;
-      margin: 20px;
       background: #121212;
       color: #fff;
+      margin: 0;
+      padding-bottom: 40px;
     }
-    nav {
-      text-align: center;
-      margin-bottom: 20px;
+    
+    /* ----------------------------------------------------
+       HEADER / NAV BAR
+    ---------------------------------------------------- */
+    .header {
+      background: #1c1c1c;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      border-bottom: 2px solid #4aa3df;
     }
-    nav a {
+    .header .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #fff;
+    }
+    .header .logo span {
       color: #4aa3df;
-      margin: 0 10px;
-      text-decoration: none;
-      font-weight: bold;
+      margin-left: 8px;
     }
+    .header nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+    }
+    .header nav a:hover {
+      color: #4aa3df;
+    }
+    
+    /* ----------------------------------------------------
+       MAIN WRAPPER
+    ---------------------------------------------------- */
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    
+    /* Request link */
     .request-link {
       text-align: center;
       margin-bottom: 20px;
@@ -29,15 +71,32 @@
     .request-link a {
       color: #4aa3df;
       font-weight: bold;
+      text-decoration: none;
     }
+    .request-link a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Title & Created by info */
     h1 {
       text-align: center;
-      font-size: 2.5em;
-      margin-bottom: 20px;
+      font-size: 2.2em;
+      margin-bottom: 10px;
     }
+    .created-by {
+      text-align: center;
+      font-size: 1.1em;
+      margin-top: 5px;
+      margin-bottom: 10px;
+    }
+    .created-by a {
+      color: #4aa3df;
+      text-decoration: none;
+    }
+    
     #lastUpdated {
       text-align: center;
-      font-size: 1em;
+      font-size: 0.95em;
       color: #ccc;
       margin-bottom: 20px;
     }
@@ -47,9 +106,19 @@
       font-size: 1.1em;
       color: #ccc;
     }
-    /* DataTables dark styling */
+    
+    /* ----------------------------------------------------
+       DATATABLES OVERRIDES (DARK THEME)
+    ---------------------------------------------------- */
     .dataTables_wrapper {
       color: #fff;
+      background: #1f1f1f;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .dataTables_filter label,
+    .dataTables_length label {
+      color: #fff !important;
     }
     .dataTables_filter input,
     .dataTables_length select {
@@ -59,111 +128,139 @@
     }
     .dataTables_paginate .paginate_button {
       color: #fff !important;
-      background: #4aa3df !important;  /* Ensure visible background color */
+      background: #4aa3df !important;
       border: 1px solid #4aa3df !important;
       padding: 5px 10px;
       margin: 2px;
+      border-radius: 4px;
+      font-weight: 500;
     }
     .dataTables_paginate .paginate_button:hover {
-      background: #6fcc7c !important;  /* Ensure hover background color */
+      background: #6fcc7c !important;
+      border-color: #6fcc7c !important;
     }
     .dataTables_paginate .paginate_button.current {
-      background: #fff !important;  /* Change to a visible background color */
-      color: #4aa3df !important;  /* Change to a visible text color */
+      background: #fff !important;
+      color: #4aa3df !important;
       border: 1px solid #4aa3df !important;
     }
     .dataTables_info {
       color: #ccc !important;
     }
-    /* Override table backgrounds and borders */
     table.dataTable {
-      background-color: #121212;
+      background-color: transparent;
+      width: 100% !important;
+      border-collapse: separate !important;
+      border-spacing: 0;
     }
-    table.dataTable thead th,
+    table.dataTable thead th {
+      background-color: #2a2a2a !important;
+      color: #fff !important;
+      font-weight: 700;
+      border-bottom: 2px solid #4aa3df !important;
+    }
     table.dataTable tbody td {
       background-color: #1e1e1e !important;
-      color: #fff !important;
-      border: 1px solid #444 !important;
+      border-bottom: 1px solid #333 !important;
+      padding: 12px;  /* Increased padding for more spacing */
     }
-    /* Sorting, hover, and selected states */
-    table.dataTable thead th.sorting,
-    table.dataTable thead th.sorting_asc,
-    table.dataTable thead th.sorting_desc {
-      background-color: #1e1e1e !important;
-      color: #fff !important;
-    }
-    table.dataTable tbody tr:hover {
+    table.dataTable tbody tr:hover td {
       background-color: #2e2e2e !important;
+    }
+    
+    /* Rank/Subtitle styling */
+    .subtitle {
+      color: #888;
+      font-size: 0.85em;
+    }
+    .gold {
+      color: gold;
+      font-weight: bold;
+    }
+    .silver {
+      color: silver;
+      font-weight: bold;
+    }
+    .bronze {
+      color: #cd7f32;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <nav>
-    <a href="index.html">Players</a>
-    <a href="teams.html">Teams</a>
-    <a href="top-verified-scores.html">Top Verified Scores</a>
-    <a href="tierlist.html">Tierlist</a>
-  </nav>
-  <!-- Google Form request link at the top -->
-  <div class="request-link">
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSe10KgvKCbe5v65IekfG2Qzbqv-bYW_gdpBullaAB1W1j_z1Q/viewform?usp=header" target="_blank">
-      Request for a Team to be Added
-    </a>
+  <!-- HEADER / NAV -->
+  <div class="header">
+    <div class="logo">
+      NITROMATH <span>LB</span>
+    </div>
+    <nav>
+      <a href="index.html">Players</a>
+      <a href="teams.html">Teams</a>
+      <a href="top-verified-scores.html">Top Verified Scores</a>
+      <a href="tierlist.html">Tierlist</a>
+    </nav>
   </div>
   
-  <h1>Nitromath Team Leaderboard</h1>
+  <div class="container">
+    <!-- Google Form request link -->
+    <div class="request-link">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSe10KgvKCbe5v65IekfG2Qzbqv-bYW_gdpBullaAB1W1j_z1Q/viewform?usp=header" target="_blank">
+        Request for a Team to be Added
+      </a>
+    </div>
+    
+    <h1>Nitromath Team Leaderboard</h1>
     <!-- Created by link -->
-<div class="created-by" style="text-align: center; font-size: 1.2em; margin-top: 10px; margin-bottom: 10px;">
-  Created by <a href="https://www.nitrotype.com/racer/nincalebgamez" target="_blank" style="color: #fff;">⚡Nincaleb⚡</a>
-</div>
-  <div id="lastUpdated">Loading...</div>
-  <div id="teamMessage">Loading team rankings...</div>
+    <div class="created-by">
+      Created by <a href="https://www.nitrotype.com/racer/nincalebgamez" target="_blank">⚡Nincaleb⚡</a>
+    </div>
+    <div id="lastUpdated">Loading...</div>
+    <div id="teamMessage">Loading team rankings...</div>
+    
+    <table id="teamLeaderboard" class="display">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Team</th>
+          <th>Total Points</th>
+          <th>Racers</th>
+          <th>Races</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
   
-  <table id="teamLeaderboard" class="display" style="width:100%">
-    <thead>
-      <tr>
-        <th>Rank</th>
-        <th>Team</th>
-        <th>Total Points</th>
-        <th>PPG</th> <!-- Added PPG column header -->
-        <th>Racers</th>
-        <th>Games</th>
-      </tr>
-    </thead>
-  </table>
-  
-  <!-- Scripts -->
+  <!-- SCRIPTS -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script>
-    // Fetch the timestamp from timestamp.txt, interpret it as UTC, then convert to local display with "UTC" label
+    // Fetch the timestamp from timestamp.txt and display it.
     fetch("timestamp.txt")
       .then(response => response.text())
       .then(text => {
-        // Remove "Last Updated:" prefix and trim spaces.
         const serverTimestamp = text.replace("Last Updated:", "").trim();
-        // Create a Date using UTC string by appending ' UTC'
         const utcDate = new Date(serverTimestamp + " UTC");
-        // Display the date as a locale string, with "UTC" label appended.
-        document.getElementById("lastUpdated").textContent = "Last Updated (Your Local Time): " + utcDate.toLocaleString() + " ";
+        document.getElementById("lastUpdated").textContent =
+          "Last Updated (Your Local Time): " + utcDate.toLocaleString() + " ";
       })
       .catch(error => {
         console.error("Error fetching the timestamp:", error);
-        document.getElementById("lastUpdated").textContent = "Last Updated: Error loading timestamp.";
+        document.getElementById("lastUpdated").textContent =
+          "Last Updated: Error loading timestamp.";
       });
-
-    // Helper: Format date as YYYYMMDD using UTC date methods.
+    
+    // Helper: Format date as YYYYMMDD using UTC.
     function formatUTCDate(date) {
       const y = date.getUTCFullYear();
       const m = String(date.getUTCMonth() + 1).padStart(2, '0');
       const d = String(date.getUTCDate()).padStart(2, '0');
       return y + m + d;
     }
-
-    // Use the UTC date to determine the CSV filename (saved in csv_archive folder)
+    
+    // Construct CSV path using the UTC date.
     const teamCsv = `csv_archive/nitromath_team_leaderboard_${formatUTCDate(new Date())}.csv`;
-
+    
     Papa.parse(teamCsv, {
       download: true,
       header: true,
@@ -172,15 +269,21 @@
         const teamData = teamResults.data
           .filter(t => t.Team && t.TotalPoints)
           .sort((a, b) => b.TotalPoints - a.TotalPoints)
-          .map((t, i) => ({
-            rank: i + 1,
-            team: t.Team,
-            points: Math.round(parseFloat(t.TotalPoints)) || 0,
-            ppg: t.Races ? (Math.round(parseFloat(t.TotalPoints)) / t.Races).toFixed(2) : 0, // Calculate PPG
-            racers: t.Members || 0, 
-            games: t.Races || 0
-          }));
-    
+          .map((t, i) => {
+            let rank = i + 1;
+            let rankDisplay = rank;
+            if (rank === 1) rankDisplay = `<span class="gold">${rank}</span>`;
+            else if (rank === 2) rankDisplay = `<span class="silver">${rank}</span>`;
+            else if (rank === 3) rankDisplay = `<span class="bronze">${rank}</span>`;
+            return {
+              rank: rankDisplay,
+              team: t.Team,
+              points: Math.round(parseFloat(t.TotalPoints)) || 0,
+              racers: t.Members || 0,
+              races: t.Races || 0
+            };
+          });
+        
         $('#teamLeaderboard').DataTable({
           data: teamData,
           pageLength: 50,
@@ -190,14 +293,10 @@
           ],
           dom: '<"top"lf>rt<"bottom"ip>',
           columns: [
-            { data: 'rank' },
+            { data: 'rank', render: function(data) { return data; } },
             { 
               data: 'team',
-              render: (team) => team ? `
-                <a href="https://nitromath.com/team/${team}" target="_blank" style="color: #6fcc7c;">
-                  ${team}
-                </a>
-              ` : ''
+              render: team => team ? `<a href="https://nitromath.com/team/${team}" target="_blank" style="color: #6fcc7c;">${team}</a>` : ''
             },
             { 
               data: 'points',
@@ -205,26 +304,18 @@
                 return type === 'display' ? Number(data).toLocaleString() : data;
               }
             },
+            { data: 'racers' },
             { 
-              data: 'ppg',
-              render: function(data, type, row) {
-                return type === 'display' ? Number(data).toLocaleString() : data;
-              }
-            },
-            { data: 'racers' }, 
-            { 
-              data: 'games',
+              data: 'races',
               render: function(data, type, row) {
                 return type === 'display' ? Number(data).toLocaleString() : data;
               }
             }
           ],
           initComplete: function() {
-            $('.dataTables_filter label').css('color', '#fff');
-            $('.dataTables_length label').css('color', '#fff');
+            document.getElementById('teamMessage').textContent = '';
           }
         });
-        document.getElementById('teamMessage').textContent = '';
       }
     });
   </script>

@@ -3,25 +3,72 @@
 <head>
   <meta charset="UTF-8">
   <title>Nitromath Player Leaderboard</title>
+
+  <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+  
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+  
   <style>
+    /* ----------------------------------------------------
+       BASIC RESET & BODY STYLES
+    ---------------------------------------------------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
       font-family: 'Montserrat', sans-serif;
-      margin: 20px;
-      background: #121212;
+      background: #121212; /* or use a subtle gradient if you prefer */
+      color: #fff;
+      margin: 0;
+      padding-bottom: 40px; /* some breathing room at the bottom */
+    }
+
+    /* ----------------------------------------------------
+       HEADER / NAV BAR
+    ---------------------------------------------------- */
+    .header {
+      background: #1c1c1c; 
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      border-bottom: 2px solid #4aa3df;
+    }
+    .header .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5em;
+      font-weight: 700;
       color: #fff;
     }
-    nav {
-      text-align: center;
-      margin-bottom: 20px;
+    .header .logo span {
+      color: #4aa3df; 
+      margin-left: 8px;
     }
-    nav a {
-      color: #4aa3df;
-      margin: 0 10px;
+    .header nav a {
+      color: #fff;
       text-decoration: none;
-      font-weight: bold;
+      margin-left: 20px;
+      font-weight: 500;
     }
+    .header nav a:hover {
+      color: #4aa3df;
+    }
+
+    /* ----------------------------------------------------
+       MAIN WRAPPER
+    ---------------------------------------------------- */
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+
+    /* Request link at the top (above the table) */
     .request-link {
       text-align: center;
       margin-bottom: 20px;
@@ -29,15 +76,32 @@
     .request-link a {
       color: #4aa3df;
       font-weight: bold;
+      text-decoration: none;
     }
+    .request-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* Title & "Created by" info */
     h1 {
       text-align: center;
-      font-size: 2.5em;
+      font-size: 2.2em;
       margin-bottom: 10px;
     }
+    .created-by {
+      text-align: center;
+      font-size: 1.1em;
+      margin-top: 5px;
+      margin-bottom: 10px;
+    }
+    .created-by a {
+      color: #4aa3df;
+      text-decoration: none;
+    }
+
     #lastUpdated {
       text-align: center;
-      font-size: 1em;
+      font-size: 0.95em;
       color: #ccc;
       margin-bottom: 20px;
     }
@@ -47,9 +111,21 @@
       font-size: 1.1em;
       color: #ccc;
     }
-    /* DataTables dark styling */
+
+    /* ----------------------------------------------------
+       DATATABLES OVERRIDES (DARK THEME)
+    ---------------------------------------------------- */
     .dataTables_wrapper {
       color: #fff;
+      background: #1f1f1f;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    /* Filter & length elements */
+    .dataTables_filter label,
+    .dataTables_length label {
+      color: #fff !important;
     }
     .dataTables_filter input,
     .dataTables_length select {
@@ -57,91 +133,117 @@
       color: #fff !important;
       border: 1px solid #444 !important;
     }
+
+    /* Pagination buttons */
     .dataTables_paginate .paginate_button {
       color: #fff !important;
-      background: #4aa3df !important;  /* Ensure visible background color */
+      background: #4aa3df !important;
       border: 1px solid #4aa3df !important;
       padding: 5px 10px;
       margin: 2px;
+      border-radius: 4px;
+      font-weight: 500;
     }
     .dataTables_paginate .paginate_button:hover {
-      background: #6fcc7c !important;  /* Ensure hover background color */
+      background: #6fcc7c !important;
+      border-color: #6fcc7c !important;
     }
     .dataTables_paginate .paginate_button.current {
-      background: #fff !important;  /* Change to a visible background color */
-      color: #4aa3df !important;  /* Change to a visible text color */
+      background: #fff !important;
+      color: #4aa3df !important;
       border: 1px solid #4aa3df !important;
     }
+
     .dataTables_info {
       color: #ccc !important;
     }
-    /* Override table backgrounds and borders */
+
+    /* Table structure */
     table.dataTable {
-      background-color: #121212;
+      background-color: transparent; /* Let the wrapper handle the background */
+      width: 100% !important;
+      border-collapse: separate !important;
+      border-spacing: 0;
     }
-    table.dataTable thead th,
+
+    table.dataTable thead th {
+      background-color: #2a2a2a !important;
+      color: #fff !important;
+      font-weight: 700;
+      border-bottom: 2px solid #4aa3df !important;
+    }
     table.dataTable tbody td {
       background-color: #1e1e1e !important;
-      color: #fff !important;
-      border: 1px solid #444 !important;
+      border-bottom: 1px solid #333 !important;
     }
-    /* Sorting, hover, and selected states */
-    table.dataTable thead th.sorting,
-    table.dataTable thead th.sorting_asc,
-    table.dataTable thead th.sorting_desc {
-      background-color: #1e1e1e !important;
-      color: #fff !important;
-    }
-    table.dataTable tbody tr:hover {
+    table.dataTable tbody tr:hover td {
       background-color: #2e2e2e !important;
     }
-    table.dataTable tbody tr.selected,
-    table.dataTable tbody td.selected {
-      background-color: #2e2e2e !important;
-    }
-    /* Subtitle styling */
+
+    /* Rank / Subtitle styling */
     .subtitle {
       color: #888;
       font-size: 0.85em;
     }
+    .gold {
+      color: gold;
+      font-weight: bold;
+    }
+    .silver {
+      color: silver;
+      font-weight: bold;
+    }
+    .bronze {
+      color: #cd7f32;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <nav>
-    <a href="index.html">Players</a>
-    <a href="teams.html">Teams</a>
-    <a href="top-verified-scores.html">Top Verified Scores</a>
-    <a href="tierlist.html">Tierlist</a>
-  </nav>
-  <!-- Google Form request link at the top -->
-  <div class="request-link">
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSe10KgvKCbe5v65IekfG2Qzbqv-bYW_gdpBullaAB1W1j_z1Q/viewform?usp=header" target="_blank">
-      Request for a Team to be Added
-    </a>
+  <!-- HEADER / NAV -->
+  <div class="header">
+    <div class="logo">
+      NITROMATH <span>LB</span>
+    </div>
+    <nav>
+      <a href="index.html">Players</a>
+      <a href="teams.html">Teams</a>
+      <a href="top-verified-scores.html">Top Verified Scores</a>
+      <a href="tierlist.html">Tierlist</a>
+    </nav>
   </div>
-  
-  <h1>Nitromath Player Leaderboard</h1>
-    <!-- Created by link -->
-<div class="created-by" style="text-align: center; font-size: 1.2em; margin-top: 10px; margin-bottom: 10px;">
-  Created by <a href="https://www.nitrotype.com/racer/nincalebgamez" target="_blank" style="color: #fff;">⚡Nincaleb⚡</a>
-</div>
-  <div id="lastUpdated">Loading...</div>
-  <div id="message">Loading leaderboard...</div>
-  
-  <table id="leaderboard" class="display" style="width:100%">
-    <thead>
-      <tr>
-        <th>Place</th>
-        <th>Racer</th>
-        <th>Points</th>
-        <th>PPG</th>
-        <th>Games</th>
-        <th>Team</th>
-      </tr>
-    </thead>
-  </table>
 
-  <!-- Scripts -->
+  <div class="container">
+    <!-- Google Form request link at the top -->
+    <div class="request-link">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSe10KgvKCbe5v65IekfG2Qzbqv-bYW_gdpBullaAB1W1j_z1Q/viewform?usp=header" target="_blank">
+        Request for a Team to be Added
+      </a>
+    </div>
+
+    <h1>Nitromath Player Leaderboard</h1>
+    <!-- Created by link -->
+    <div class="created-by" style="text-align: center; font-size: 1.2em; margin-top: 10px; margin-bottom: 10px;">
+      Created by <a href="https://www.nitrotype.com/racer/nincalebgamez" target="_blank" style="color: #fff;">⚡Nincaleb⚡</a>
+    </div>
+    <div id="lastUpdated">Loading...</div>
+    <div id="message">Loading leaderboard...</div>
+
+    <table id="leaderboard" class="display">
+      <thead>
+        <tr>
+          <th>Place</th>
+          <th>Racer</th>
+          <th>Points</th>
+          <th>PPG</th>
+          <th>Games</th>
+          <th>Team</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+
+  <!-- SCRIPTS -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -150,15 +252,15 @@
     fetch("timestamp.txt")
       .then(response => response.text())
       .then(text => {
-        // Remove "Last Updated:" prefix and trim spaces
         const serverTimestamp = text.replace("Last Updated:", "").trim();
-        // We assume the saved timestamp is in UTC.
         const utcDate = new Date(serverTimestamp + " UTC");
-        document.getElementById("lastUpdated").textContent = "Last Updated (Your Local Time): " + utcDate.toLocaleString() + " ";
+        document.getElementById("lastUpdated").textContent =
+          "Last Updated (Your Local Time): " + utcDate.toLocaleString() + " ";
       })
       .catch(error => {
         console.error("Error fetching the timestamp:", error);
-        document.getElementById("lastUpdated").textContent = "Last Updated: Error loading timestamp.";
+        document.getElementById("lastUpdated").textContent =
+          "Last Updated: Error loading timestamp.";
       });
 
     // Helper: Format date as YYYYMMDD using UTC, for file names.
@@ -177,16 +279,23 @@
       header: true,
       skipEmptyLines: true,
       complete: function(results) {
-        const processedData = results.data.map((row, index) => ({
-          rank: index + 1,
-          displayName: row.DisplayName || 'Unknown',
-          profileLink: row.ProfileLink || '#',
-          points: Math.round(parseFloat(row.Points)) || 0,
-          races: row.Races || 0,
-          ppg: row.Races ? (Math.round(parseFloat(row.Points)) / row.Races).toFixed(2) : 0, // Calculate PPG
-          team: row.Team || '',
-          title: row.Title || ''  // Get the "title" value
-        })).sort((a, b) => b.points - a.points);
+        const processedData = results.data.map((row, index) => {
+          const rank = index + 1;
+          let rankDisplay = rank;
+          if (rank === 1) rankDisplay = `<span class="gold">${rank}</span>`;
+          else if (rank === 2) rankDisplay = `<span class="silver">${rank}</span>`;
+          else if (rank === 3) rankDisplay = `<span class="bronze">${rank}</span>`;
+          return {
+            rank: rankDisplay,
+            displayName: row.DisplayName || 'Unknown',
+            profileLink: row.ProfileLink || '#',
+            points: Math.round(parseFloat(row.Points)) || 0,
+            races: row.Races || 0,
+            ppg: row.Races ? (Math.round(parseFloat(row.Points)) / row.Races).toFixed(2) : 0,
+            team: row.Team || '',
+            title: row.Title || ''
+          };
+        }).sort((a, b) => b.points - a.points);
 
         $('#leaderboard').DataTable({
           data: processedData,
@@ -197,11 +306,11 @@
           ],
           dom: '<"top"lf>rt<"bottom"ip>',
           columns: [
-            { data: 'rank' },
+            { data: 'rank', render: data => data },
             { 
               data: null,
               render: (data) => `
-                <a href="${data.profileLink}" target="_blank" style="color: #4aa3df;">
+                <a href="${data.profileLink}" target="_blank" style="color: #4aa3df; font-weight: 600;">
                   ${data.displayName}
                 </a>
                 <div class="subtitle">"${data.title}"</div>
@@ -209,19 +318,19 @@
             },
             { 
               data: 'points',
-              render: function(data, type, row) {
+              render: function(data, type) {
                 return type === 'display' ? Number(data).toLocaleString() : data;
               }
             },
             { 
               data: 'ppg',
-              render: function(data, type, row) {
+              render: function(data, type) {
                 return type === 'display' ? Number(data).toLocaleString() : data;
               }
             },
             { 
               data: 'races',
-              render: function(data, type, row) {
+              render: function(data, type) {
                 return type === 'display' ? Number(data).toLocaleString() : data;
               }
             },
@@ -230,8 +339,7 @@
               render: (team) => team ? `
                 <a href="https://nitromath.com/team/${team}" target="_blank" style="color: #6fcc7c;">
                   ${team}
-                </a>
-              ` : ''
+                </a>` : ''
             }
           ],
           initComplete: function() {

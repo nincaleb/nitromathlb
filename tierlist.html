@@ -1,61 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tierlist</title>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            background: #121212;
-            color: #fff;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        nav {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        nav a {
-            color: #4aa3df;
-            margin: 0 10px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        h1 {
-            text-align: center;
-            font-size: 2.5em;
-            margin: 20px 0;
-        }
-        .description {
-            text-align: center;
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-        iframe {
-            flex: 1;
-            width: 100%;
-            border: none;
-            filter: invert(1) hue-rotate(180deg);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Nitromath Tierlist</title>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    /* RESET & BODY */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Montserrat', sans-serif;
+      background: #121212;
+      color: #fff;
+      margin: 0;
+    }
+    /* HEADER / NAV BAR */
+    .header {
+      background: #1c1c1c;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      border-bottom: 2px solid #4aa3df;
+    }
+    .header .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #fff;
+    }
+    .header .logo span {
+      color: #4aa3df;
+      margin-left: 8px;
+    }
+    .header nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+    }
+    .header nav a:hover {
+      color: #4aa3df;
+    }
+    /* MAIN WRAPPER (fill remaining vertical space) */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 56px); /* subtract header height (~56px) */
+    }
+    /* REQUEST LINK */
+    .request-link {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .request-link a {
+      color: #4aa3df;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .request-link a:hover {
+      text-decoration: underline;
+    }
+    /* TITLE & DESCRIPTION */
+    h1 {
+      text-align: center;
+      font-size: 2.2em;
+      margin-bottom: 10px;
+    }
+    .description {
+      text-align: center;
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+    .description a {
+      color: #4aa3df;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .description a:hover {
+      text-decoration: underline;
+    }
+    /* LAST UPDATED / TIER MESSAGE */
+    #lastUpdated, #tierMessage {
+      text-align: center;
+      font-size: 0.95em;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+    /* IFRAME STRETCHES AND APPLIES FILTER */
+    .iframe-wrapper {
+      flex: 1; /* take remaining vertical space */
+      display: flex;
+    }
+    .iframe-wrapper iframe {
+      width: 100%;
+      border: none;
+      /* Height: fill parent (the .iframe-wrapper) */
+      /* This ensures the iframe takes all leftover vertical space */
+      /* If you prefer a fixed height, remove flex & set e.g. height: 100vh */
+      filter: invert(0.9) hue-rotate(180deg) brightness(0.9) saturate(1.2);
+      /* Tweak values to taste. This attempts to make the white background gray. */
+    }
+  </style>
 </head>
 <body>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">
+      NITROMATH <span>LB</span>
+    </div>
     <nav>
-        <a href="index.html">Players</a>
-        <a href="teams.html">Teams</a>
-        <a href="top-verified-scores.html">Top Verified Scores</a>
-        <a href="tierlist.html">Tierlist</a>
+      <a href="index.html">Players</a>
+      <a href="teams.html">Teams</a>
+      <a href="top-verified-scores.html">Top Verified Scores</a>
+      <a href="tierlist.html">Tierlist</a>
     </nav>
+  </div>
+
+  <div class="main-content">
+    <div class="request-link">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSe10KgvKCbe5v65IekfG2Qzbqv-bYW_gdpBullaAB1W1j_z1Q/viewform?usp=header"
+         target="_blank">
+        Request for a Team to be Added
+      </a>
+    </div>
 
     <h1>Tierlist</h1>
     <div class="description">
-        Nitro Math Tier Testing Discord Server: <a href="https://discord.gg/WsQYV4XMZx" target="_blank" style="color: #4aa3df;">https://discord.gg/WsQYV4XMZx</a>
+      Nitro Math Tier Testing Discord Server:
+      <a href="https://discord.gg/WsQYV4XMZx" target="_blank">https://discord.gg/WsQYV4XMZx</a>
     </div>
-    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vS8fBAfF3DQUYqYo4goxy12H2Om8PV_6dbOghc9X4_E9KyRDULegmwjxqGRlU6EBO36oGpm8-YHRrGl/pubhtml?widget=true&amp;headers=false"></iframe>
+    <div class="iframe-wrapper">
+      <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vS8fBAfF3DQUYqYo4goxy12H2Om8PV_6dbOghc9X4_E9KyRDULegmwjxqGRlU6EBO36oGpm8-YHRrGl/pubhtml?widget=true&amp;headers=false">
+      </iframe>
+    </div>
+  </div>
 </body>
 </html>
