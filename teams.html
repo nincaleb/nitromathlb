@@ -223,6 +223,7 @@
           <th>Rank</th>
           <th>Team</th>
           <th>Total Points</th>
+          <th>PPG</th>
           <th>Racers</th>
           <th>Races</th>
         </tr>
@@ -275,12 +276,18 @@
             if (rank === 1) rankDisplay = `<span class="gold">${rank}</span>`;
             else if (rank === 2) rankDisplay = `<span class="silver">${rank}</span>`;
             else if (rank === 3) rankDisplay = `<span class="bronze">${rank}</span>`;
+            
+            const points = Math.round(parseFloat(t.TotalPoints)) || 0;
+            const races = parseInt(t.Races) || 0;
+            const ppg = races > 0 ? points / races : 0;
+            
             return {
               rank: rankDisplay,
               team: t.Team,
-              points: Math.round(parseFloat(t.TotalPoints)) || 0,
+              points: points,
+              ppg: ppg,
               racers: t.Members || 0,
-              races: t.Races || 0
+              races: races
             };
           });
         
@@ -302,6 +309,12 @@
               data: 'points',
               render: function(data, type, row) {
                 return type === 'display' ? Number(data).toLocaleString() : data;
+              }
+            },
+            { 
+              data: 'ppg',
+              render: function(data, type, row) {
+                return type === 'display' ? Number(data).toFixed(2) : data;
               }
             },
             { data: 'racers' },
