@@ -16,8 +16,9 @@ TEAM_TAGS = [
     "1SMASH", "HIM32", "WINNR", "P0LICE", "DORYA", "ABAMS", "PRVBS", "GRIFF", "CR7TW",
     "SOCER5", "SNIPE1", "ETYPEC", "PUPBY", "RTV", "HRX", "12312B", "NTPD1", "ZOOM",
     "COBRAS", "KINGH", "R3M1X", "EASTER", "RISE", "W2V", "DRBZZZ", "81BAG", "GOLD",
-    "SSA", "49ERSI", "CCFRI", "GOLD55", "GOATS", "IMT", "A3", "TMS", "TR1", "MATHNL",
-     "JSTW", "PIGGY", "WL", "IM4", "TIKTOK", "CC1", "404", "LORD", "SPILA"
+    "SSA", "49ERSI", "CCFRI", "GOLD55", "GOATS", "IMT", "A3", "TMS", "TR1", "MATHNL", 
+    "JSTW", "PIGGY", "WL", "IM4", "TIKTOK", "CC1", "404", "LORD", "SPILA", "DVM", 
+    "GO10"
 ]
 
 HEADERS = {
