@@ -2,14 +2,14 @@ name: Update NitroMath Leaderboards
 
 on:
   schedule:
-    - cron: '0 */3 * * *'  # Runs every 3 hours on the hour (e.g., 00:00, 03:00, 06:00, etc.)
-  workflow_dispatch:       # Allows manual triggering from GitHub Actions
+    - cron: '0 */3 * * *'  # every 3 hours
+  workflow_dispatch:
 
 jobs:
   update-leaderboards:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Ensure the workflow has permission to push changes
+      contents: write
 
     steps:
       - name: Checkout Repository
@@ -20,11 +20,19 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install Dependencies
+      - name: Install Chromium & ChromeDriver
         run: |
-          pip install requests pandas
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-chromedriver
+
+      - name: Install Python dependencies
+        run: |
+          pip install selenium pandas
 
       - name: Run NitroMath Leaderboard Script
+        env:
+          CHROME_BINARY: /usr/bin/chromium-browser
+          CHROMEDRIVER_PATH: /usr/bin/chromedriver
         run: python nitromath_leaderboard.py
 
       - name: Configure Git
@@ -35,9 +43,8 @@ jobs:
       - name: Commit Changes
         run: |
           git add .
-          # Only commit if there are changes
           git diff-index --quiet HEAD || git commit -m "Auto update leaderboard at $(date)"
 
-      - name: Push Changes using PAT
+      - name: Push Changes
         run: |
           git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/nincaleb/nitromathlb.git main
