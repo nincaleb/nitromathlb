@@ -1,8 +1,14 @@
 import os
-import requests
+import json
+import time
 import pandas as pd
 from datetime import datetime, timezone
-import time
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 
 # Updated TEAM_TAGS with your new teams
 TEAM_TAGS = [
@@ -16,117 +22,139 @@ TEAM_TAGS = [
     "1SMASH", "HIM32", "WINNR", "P0LICE", "DORYA", "ABAMS", "PRVBS", "GRIFF", "CR7TW",
     "SOCER5", "SNIPE1", "ETYPEC", "PUPBY", "RTV", "HRX", "12312B", "NTPD1", "ZOOM",
     "COBRAS", "KINGH", "R3M1X", "EASTER", "RISE", "W2V", "DRBZZZ", "81BAG", "GOLD",
-    "SSA", "49ERSI", "CCFRI", "GOLD55", "GOATS", "IMT", "A3", "TMS", "TR1", "MATHNL", 
-    "JSTW", "PIGGY", "WL", "IM4", "TIKTOK", "CC1", "404", "LORD", "SPILA", "DVM", 
+    "SSA", "49ERSI", "CCFRI", "GOLD55", "GOATS", "IMT", "A3", "TMS", "TR1", "MATHNL",
+    "JSTW", "PIGGY", "WL", "IM4", "TIKTOK", "CC1", "404", "LORD", "SPILA", "DVM",
     "GO10"
 ]
+TEAM_TAGS = sorted(list(set(TEAM_TAGS)), key=TEAM_TAGS.index)
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    "Accept": "application/json",
-}
+# --- Selenium Setup (optimized + explicit binary) ---
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--disable-extensions")
+chrome_options.add_argument("--disable-logging")
+chrome_options.add_argument("--log-level=3")
+chrome_options.add_argument("--window-size=1920,1080")
+chrome_options.add_experimental_option("prefs", {
+    "profile.managed_default_content_settings.images": 2
+})
+chrome_options.add_argument(
+    "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+)
+chrome_options.set_capability("pageLoadStrategy", "eager")
 
-def get_team_data(team_tag, retries=3, delay=5):
-    """Fetch season data and stats from the API for a team."""
+# point at system installed chrome & chromedriver
+chrome_options.binary_location = os.getenv(
+    "CHROME_BINARY",
+    "/usr/bin/chromium-browser"
+)
+driver_service = Service(executable_path=os.getenv(
+    "CHROMEDRIVER_PATH",
+    "/usr/bin/chromedriver"
+))
+driver = webdriver.Chrome(service=driver_service, options=chrome_options)
+driver.set_page_load_timeout(10)
+
+def get_team_data(driver, team_tag, retries=3, delay=2):
     url = f"https://www.nitromath.com/api/v2/teams/{team_tag}"
-    for attempt in range(retries):
+    for attempt in range(1, retries+1):
         try:
-            response = requests.get(url, headers=HEADERS, timeout=10, verify=True)
-            if response.status_code == 200:
-                data = response.json()
-                if data.get('status') == 'OK':
-                    season = data['results'].get('season', [])
-                    stats = data['results'].get('stats', [])
-                    info = data['results'].get('info', {})
-                    return season, stats, info
+            print(f"[{team_tag}] fetching (attempt {attempt})")
+            driver.get(url)
+            time.sleep(0.5)
+            try:
+                raw = driver.find_element(By.TAG_NAME, "pre").text
+            except:
+                raw = driver.find_element(By.TAG_NAME, "body").text
+            data = json.loads(raw)
+            if data.get("status") == "OK":
+                return (
+                    data["results"].get("season", []),
+                    data["results"].get("stats", []),
+                    data["results"].get("info", {})
+                )
+            print(f"[{team_tag}] status: {data.get('status')}")
+            return [], [], {}
+        except TimeoutException:
+            print(f"[{team_tag}] load timed out")
             return [], [], {}
         except Exception as e:
-            print(f"Error fetching data for team {team_tag}: {e}")
+            print(f"[{team_tag}] error: {e}, retrying in {delay}s")
             time.sleep(delay)
     return [], [], {}
 
 def get_team_stats(stats):
-    """Extract relevant stats from the 'board: season'."""
     for stat in stats:
-        if stat.get('board') == 'season':
+        if stat.get("board") == "season":
             return {
-                'answered': int(stat.get('answered', 0)),
-                'played': int(stat.get('played', 0)),
-                'errs': int(stat.get('errs', 0))
+                "answered": int(stat.get("answered", 0)),
+                "played":   int(stat.get("played",   0)),
+                "errs":     int(stat.get("errs",     0))
             }
-    return {'answered': 0, 'played': 0, 'errs': 0}
+    return {"answered":0,"played":0,"errs":0}
 
-# Use UTC for timestamp and filenames.
-utc_timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-with open("timestamp.txt", "w") as file:
-    file.write(f"Last Updated: {utc_timestamp}")
+def calculate_points(answered, errs, played):
+    return (answered - errs) / played if played > 0 else 0
 
-# Ensure a folder called 'csv_archive' exists
+# timestamp
+utc_ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+with open("timestamp.txt","w") as f:
+    f.write(f"Last Updated: {utc_ts}")
+
 csv_archive_dir = "csv_archive"
-if not os.path.exists(csv_archive_dir):
-    os.makedirs(csv_archive_dir)
+os.makedirs(csv_archive_dir, exist_ok=True)
 
 all_players = []
-team_summary = {}  # Store team stats
+team_summary = {}
 
-for team_tag in TEAM_TAGS:
-    season_data, stats_data, info_data = get_team_data(team_tag)
+for tag in TEAM_TAGS:
+    season_data, stats_data, info_data = get_team_data(driver, tag)
     if not season_data:
-        print(f"No seasonal data found for team {team_tag}")
+        print(f"[{tag}] no data")
         continue
 
-    # Extract team stats from 'board: season'
-    team_stats = get_team_stats(stats_data)
-    answered = team_stats['answered']
-    played = team_stats['played']
-    errs = team_stats['errs']
-    members = info_data.get('members', 0)  # Get the "members" value
+    ts = get_team_stats(stats_data)
+    pts = calculate_points(ts["answered"], ts["errs"], ts["played"])
+    members = info_data.get("members", 0)
 
-    # Update points calculation
-    points = (answered - errs) / played if played > 0 else 0
-
-    team_summary[team_tag] = {
-        'Team': team_tag,
-        'TotalPoints': answered - errs,
-        'Races': played,
-        'Members': members  # Add the "members" value
+    team_summary[tag] = {
+        "Team":        tag,
+        "TotalPoints": ts["answered"] - ts["errs"],
+        "Races":       ts["played"],
+        "Members":     members
     }
 
-    # Process individual players
-    for member in season_data:
-        if member.get('points') is not None:
-            username = member.get('username', 'N/A')
-            display_name = member.get('displayName', 'Unknown')
-            profile_link = f"https://www.nitromath.com/racer/{username}"
-            answered = int(member.get('answered', 0))
-            played = int(member.get('played', 0))
-            errs = int(member.get('errs', 0))
-            title = member.get('title', 'N/A')  # Get the "title" value
+    for m in season_data:
+        if m.get("points") is None:
+            continue
+        answered = int(m.get("answered", 0))
+        played   = int(m.get("played",   0))
+        errs     = int(m.get("errs",     0))
+        title    = m.get("title", "N/A")
+        pts_p    = answered - errs if played > 0 else 0
 
-            # Update points calculation for players
-            points = (answered - errs) if played > 0 else 0
+        all_players.append({
+            "Username":    m.get("username","N/A"),
+            "ProfileLink": f"https://www.nitromath.com/racer/{m.get('username','')}",
+            "DisplayName": m.get("displayName","Unknown"),
+            "Races":       played,
+            "Points":      pts_p,
+            "Title":       title,
+            "Team":        tag
+        })
 
-            all_players.append({
-                'Username': username,
-                'ProfileLink': profile_link,
-                'DisplayName': display_name,
-                'Races': played,
-                'Points': points,
-                'Title': title,  # Add the "title" value
-                'Team': team_tag
-            })
+if all_players:
+    df = pd.DataFrame(all_players).sort_values("Points", ascending=False)
+    stamp = datetime.utcnow().strftime("%Y%m%d")
+    df.to_csv(os.path.join(csv_archive_dir, f'nitromath_season_leaderboard_{stamp}.csv'), index=False)
 
-if not all_players:
-    print("No valid player data found. Please verify the team tags and API responses.")
+    df2 = pd.DataFrame(team_summary.values()).sort_values("TotalPoints", ascending=False)
+    df2.to_csv(os.path.join(csv_archive_dir, f'nitromath_team_leaderboard_{stamp}.csv'), index=False)
 else:
-    df = pd.DataFrame(all_players)
-    df = df.sort_values(by='Points', ascending=False)
+    print("No valid player data found.")
 
-    utc_filename = datetime.now(timezone.utc).strftime("%Y%m%d")
-    # Save player leaderboard CSV in csv_archive folder based on UTC date.
-    df.to_csv(os.path.join(csv_archive_dir, f'nitromath_season_leaderboard_{utc_filename}.csv'), index=False)
-
-    df_teams = pd.DataFrame(list(team_summary.values()))
-    df_teams = df_teams.sort_values(by='TotalPoints', ascending=False)
-    # Save team leaderboard CSV in csv_archive folder based on UTC date.
-    df_teams.to_csv(os.path.join(csv_archive_dir, f'nitromath_team_leaderboard_{utc_filename}.csv'), index=False)
+driver.quit()
